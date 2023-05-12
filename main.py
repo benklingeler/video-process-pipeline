@@ -1,5 +1,5 @@
 from rich import print
-from configuration import loadConfiguration
+from lib.configuration import loadConfiguration
 from pipeline.collectInformation import collectInformation
 
 

@@ -35,6 +35,8 @@ def loadConfiguration():
     with open(getConfigurationFilePath(), "r") as configFile:
         configuration = ujson.load(configFile)
 
+    return True
+
 
 def saveConfiguration():
     """
@@ -46,6 +48,8 @@ def saveConfiguration():
     global configuration
     with open(getConfigurationFilePath(), "w") as configFile:
         ujson.dump(configuration, configFile)
+
+    return True
 
 
 def getConfiguration():

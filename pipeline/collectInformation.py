@@ -3,7 +3,7 @@ from pathlib import Path
 
 from rich.console import Console
 import inquirer as iq
-from configuration import getConfiguration, saveConfiguration
+from lib.configuration import getConfiguration, saveConfiguration
 from validators.validateFileType import validateFileType
 
 from validators.validatePath import validatePath
