@@ -1,4 +1,5 @@
 from rich import print
+from configuration import loadConfiguration
 
 from pipeline.collectInformation import collectInformation
 
@@ -20,4 +21,5 @@ def startConvertingFiles():
   return
 
 if __name__ == "__main__":
+  loadConfiguration()
   startConvertingFiles()

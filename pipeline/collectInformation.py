@@ -1,14 +1,20 @@
-from os import listdir, rmdir
+from os import listdir, rmdir, path
 from pathlib import Path
 
 from rich.console import Console
 import inquirer as iq
+from configuration import getConfiguration, saveConfiguration
 from validators.validateFileType import validateFileType
 
 from validators.validatePath import validatePath 
 
 def collectInformation():
   sourcePath = getPathOfSourceFiles()
+
+  # Save the used sourcePath into the configuration
+  getConfiguration()["lastUsedSource"] = sourcePath
+  saveConfiguration()
+
   (destPath, isDestAlreadyCreated) = getDestinationPath(sourcePath)
   
   if isDestAlreadyCreated:
@@ -32,16 +38,17 @@ def collectInformation():
   return (userSelectedFiles, steps, destPath)
 
 def getPathOfSourceFiles():
-  # TODO: Delete default value later
+  lastUsedSource = getConfiguration()["lastUsedSource"]
   questions = [
-    iq.Text('sourcePath', 'What is your source directory path?', default="C:\\Users\\benkl\\Videos\\please_convert_me", validate=validatePath)
+    iq.Text('sourcePath', 'What is your source directory path?', default=lastUsedSource, validate=validatePath)
   ]
   answers = iq.prompt(questions)
   return answers["sourcePath"]
 
 def getDestinationPath(sourcePath):
+  lastUsedDestination = getConfiguration()["lastUsedDestination"]
   questions = [
-    iq.Text('destPath', 'Where should we save the results?', default=f"{sourcePath}\\results")
+    iq.Text('destPath', 'Where should we save the results?', default=(lastUsedDestination if len(lastUsedDestination) > 0 else f"{sourcePath}\\results"))
   ]
   answers = iq.prompt(questions)
   destPath = answers["destPath"]
