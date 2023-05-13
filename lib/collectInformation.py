@@ -33,7 +33,8 @@ def collectInformation():
         # Delete old dest folder, if user decides not to keep the old files
         if shouldKeepFiles is False:
             rmtree(destPath)
-            mkdir(destPath)
+
+        mkdir(destPath)
 
     files = lookupFilesInSource(sourcePath)
     exitIfNotFilesAreThere(files)

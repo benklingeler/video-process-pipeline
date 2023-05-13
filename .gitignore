@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+*.pyc
+*.cpython-311.pyc
+
 # Distribution / packaging
 .Python
 build/
