@@ -5,6 +5,7 @@ from shutil import rmtree
 from rich.console import Console
 import inquirer as iq
 from lib.configuration import getConfiguration, saveConfiguration
+from pipeline.basePipeline import BasePipeline
 from pipeline.zoomPipeline import ZoomPipeline
 from validators.validateFileType import validateFileType
 
@@ -34,7 +35,7 @@ def collectInformation():
         if shouldKeepFiles is False:
             rmtree(destPath)
 
-        mkdir(destPath)
+    mkdir(destPath)
 
     files = lookupFilesInSource(sourcePath)
     exitIfNotFilesAreThere(files)
@@ -45,7 +46,7 @@ def collectInformation():
     userSelectedFiles = getSelectedFilesByUser(filteredFiles)
     exitIfNotFilesAreThere(userSelectedFiles)
 
-    steps = getStepsForConversion()
+    steps: list[BasePipeline] = getStepsForConversion()
 
     return (userSelectedFiles, steps, destPath)
 

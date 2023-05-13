@@ -14,10 +14,10 @@ class ZoomPipeline(BasePipeline):
         zoomPercentModifier = 1 - (self.zoomPercent / 100)
         return clip.fx(
             crop,
-            x_center=clip.w / 2,
-            y_center=clip.h / 2,
-            width=clip.w * zoomPercentModifier,
-            height=clip.h * zoomPercentModifier,
+            x_center=int(clip.w / 2),
+            y_center=int(clip.h / 2),
+            width=int(clip.w * zoomPercentModifier),
+            height=int(clip.h * zoomPercentModifier),
         )
 
     def CollectRequiredInformation(self):

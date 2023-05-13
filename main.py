@@ -1,5 +1,6 @@
 import logging
 from os import path
+from pathlib import Path
 import time
 from rich import print
 import typer
@@ -30,6 +31,10 @@ def startConvertingFiles():
 
     (files, steps, destPath) = collectInformation()
 
+    # Collect information for each assigned step, before converting files
+    for step in steps:
+        step.CollectRequiredInformation()
+
     # Initialize the progress bar with a length of 100 and a label
     with typer.progressbar(length=100, label="Processing videos") as progress:
         # Iterate over each file in the list
@@ -41,14 +46,15 @@ def startConvertingFiles():
             # passing the file, steps, progress, and progress update increment
             convertedVideoClip = convertFile(file, steps, progress, 100 / len(files))
 
-            destFilePath = f"{destPath}\\{path.basename(file)}"
+            destFilePath = f"{destPath}\\{Path(file).stem}.mp4"
 
             convertedVideoClip.write_videofile(
                 destFilePath,
-                codec="mpeg4",
+                codec="libx264",
                 verbose=False,
                 threads=12,
-                logger=None,
+                bitrate="5000k",
+                # logger=None,
             )
             convertedVideoClip.close()
 

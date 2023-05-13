@@ -17,7 +17,6 @@ def convertFile(
     progress.update(subTaskStepSize)
 
     for step in steps:
-        step.CollectRequiredInformation()
         clip = step.Process(clip)
         progress.update(subTaskStepSize)
 
