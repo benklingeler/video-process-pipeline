@@ -2,4 +2,4 @@ typer[all]
 inquirer
 ujson
 pytest
-unittest
+moviepy
