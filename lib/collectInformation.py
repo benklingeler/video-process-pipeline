@@ -1,15 +1,16 @@
-from os import listdir, mkdir, rmdir, path
+from os import listdir, mkdir, path, rmdir
 from pathlib import Path
 from shutil import rmtree
 
-from rich.console import Console
 import inquirer as iq
-from lib.configuration import getConfiguration, saveConfiguration
 from pipeline.basePipeline import BasePipeline
+from pipeline.savePipeline import SavePipeline
 from pipeline.zoomPipeline import ZoomPipeline
+from rich.console import Console
 from validators.validateFileType import validateFileType
-
 from validators.validatePath import validatePath
+
+from lib.configuration import getConfiguration, saveConfiguration
 
 
 def collectInformation():
@@ -26,16 +27,16 @@ def collectInformation():
     getConfiguration()["lastUsedSource"] = sourcePath
     saveConfiguration()
 
-    (destPath, isDestAlreadyCreated) = getDestinationPath(sourcePath)
+    # (destPath, isDestAlreadyCreated) = getDestinationPath(sourcePath)
 
-    if isDestAlreadyCreated:
-        shouldKeepFiles = keepOldFiles()
+    # if isDestAlreadyCreated:
+    #     shouldKeepFiles = keepOldFiles()
 
-        # Delete old dest folder, if user decides not to keep the old files
-        if shouldKeepFiles is False:
-            rmtree(destPath)
+    #     # Delete old dest folder, if user decides not to keep the old files
+    #     if shouldKeepFiles is False:
+    #         rmtree(destPath)
 
-    mkdir(destPath)
+    # mkdir(destPath)
 
     files = lookupFilesInSource(sourcePath)
     exitIfNotFilesAreThere(files)
@@ -48,7 +49,7 @@ def collectInformation():
 
     steps: list[BasePipeline] = getStepsForConversion()
 
-    return (userSelectedFiles, steps, destPath)
+    return (userSelectedFiles, steps)
 
 
 def getPathOfSourceFiles():
@@ -72,51 +73,51 @@ def getPathOfSourceFiles():
     return answers["sourcePath"]
 
 
-def getDestinationPath(sourcePath):
-    """
-    Prompts the user to enter the destination path for the converted files.
+# def getDestinationPath(sourcePath):
+#     """
+#     Prompts the user to enter the destination path for the converted files.
 
-    Args:
-        sourcePath (str): The path of the source directory.
+#     Args:
+#         sourcePath (str): The path of the source directory.
 
-    Returns:
-        tuple: A tuple containing the destination path and a flag indicating if the destination directory already exists.
-    """
+#     Returns:
+#         tuple: A tuple containing the destination path and a flag indicating if the destination directory already exists.
+#     """
 
-    lastUsedDestination = getConfiguration()["lastUsedDestination"]
-    questions = [
-        iq.Text(
-            "destPath",
-            "Where should we save the results?",
-            default=(
-                lastUsedDestination
-                if len(lastUsedDestination) > 0
-                else f"{sourcePath}\\results"
-            ),
-        )
-    ]
-    answers = iq.prompt(questions)
-    destPath = answers["destPath"]
-    return (destPath, validatePath(True, destPath))
+#     lastUsedDestination = getConfiguration()["lastUsedDestination"]
+#     questions = [
+#         iq.Text(
+#             "destPath",
+#             "Where should we save the results?",
+#             default=(
+#                 lastUsedDestination
+#                 if len(lastUsedDestination) > 0
+#                 else f"{sourcePath}\\results"
+#             ),
+#         )
+#     ]
+#     answers = iq.prompt(questions)
+#     destPath = answers["destPath"]
+#     return (destPath, validatePath(True, destPath))
 
 
-def keepOldFiles():
-    """
-    Prompts the user to choose whether to keep or delete existing files in the target directory.
+# def keepOldFiles():
+#     """
+#     Prompts the user to choose whether to keep or delete existing files in the target directory.
 
-    Returns:
-        bool: True if the user chooses to keep old files, False otherwise.
-    """
+#     Returns:
+#         bool: True if the user chooses to keep old files, False otherwise.
+#     """
 
-    questions = [
-        iq.List(
-            "keepOldFiles",
-            message="Do you want to delete existing files in the target directory?",
-            choices=["no, keep old results", "yes, delete"],
-        )
-    ]
-    answer = iq.prompt(questions)
-    return answer["keepOldFiles"] == "no, keep old results"
+#     questions = [
+#         iq.List(
+#             "keepOldFiles",
+#             message="Do you want to delete existing files in the target directory?",
+#             choices=["no, keep old results", "yes, delete"],
+#         )
+#     ]
+#     answer = iq.prompt(questions)
+#     return answer["keepOldFiles"] == "no, keep old results"
 
 
 def lookupFilesInSource(sourcePath):
@@ -207,17 +208,19 @@ def getStepsForConversion():
         iq.Checkbox(
             "steps",
             message="Steps take in conversion",
-            choices=["Zoom into clip", "Add watermark"],
-            validate=lambda _, results: len(results) > 0,
+            choices=["Zoom into clip", "Add watermark", "Save Files"],
+            default=["Save Files"],
+            validate=lambda _, results: len(results) > 1,
         )
     ]
-    answers = iq.prompt(questions)
+    answers = iq.prompt(questions)["steps"]
     steps = []
-    for answer in answers["steps"]:
-        if answer == "Zoom into clip":
-            steps.append(ZoomPipeline())
-        # if answer == "Add watermark":
-        #     steps.append("watermark")
+
+    if "Zoom into clip" in answers:
+        steps.append(ZoomPipeline())
+    if "Save Files" in answers:
+        steps.append(SavePipeline())
+
     return steps
 
 

@@ -1,13 +1,14 @@
 import logging
+import time
 from os import path
 from pathlib import Path
-import time
-from rich import print
-import typer
-from lib.configuration import loadConfiguration
-from lib.collectInformation import collectInformation
-from proglog import ProgressBarLogger
 
+import typer
+from proglog import ProgressBarLogger
+from rich import print
+
+from lib.collectInformation import collectInformation
+from lib.configuration import loadConfiguration
 from lib.convertFile import convertFile
 
 logger = logging.getLogger("moviepy")
@@ -29,11 +30,12 @@ def startConvertingFiles():
         None
     """
 
-    (files, steps, destPath) = collectInformation()
+    (files, steps) = collectInformation()
 
     # Collect information for each assigned step, before converting files
     for step in steps:
         step.CollectRequiredInformation()
+        step.PreparePipeline()
 
     # Initialize the progress bar with a length of 100 and a label
     with typer.progressbar(length=100, label="Processing videos") as progress:
@@ -45,18 +47,6 @@ def startConvertingFiles():
             # Convert the current file using the `convertFile` function,
             # passing the file, steps, progress, and progress update increment
             convertedVideoClip = convertFile(file, steps, progress, 100 / len(files))
-
-            destFilePath = f"{destPath}\\{Path(file).stem}.mp4"
-
-            convertedVideoClip.write_videofile(
-                destFilePath,
-                codec="libx264",
-                verbose=False,
-                threads=12,
-                bitrate="5000k",
-                # logger=None,
-            )
-            convertedVideoClip.close()
 
         # Finish rendering the progress bar
         progress.render_finish()

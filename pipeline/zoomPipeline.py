@@ -1,9 +1,9 @@
-from pipeline.basePipeline import BasePipeline
+import inquirer as iq
 from moviepy.editor import VideoClip
 from moviepy.video.fx.crop import crop
-import inquirer as iq
-
 from validators.validateNumberInput import validateNumberInput
+
+from pipeline.basePipeline import BasePipeline
 
 
 class ZoomPipeline(BasePipeline):
@@ -35,4 +35,3 @@ class ZoomPipeline(BasePipeline):
         )
 
         self.zoomPercent = int(answers["percent"])
-        print(self.zoomPercent)

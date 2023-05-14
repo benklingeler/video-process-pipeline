@@ -1,7 +1,8 @@
 from typing import Sequence
-from moviepy.editor import VideoFileClip, ImageClip, VideoClip
-from pipeline.basePipeline import BasePipeline
 
+from moviepy.editor import ImageClip, VideoClip, VideoFileClip
+from pipeline.basePipeline import BasePipeline
+from pipeline.savePipeline import SavePipeline
 from validators.validateFileType import validateFileType
 
 
@@ -17,7 +18,10 @@ def convertFile(
     progress.update(subTaskStepSize)
 
     for step in steps:
-        clip = step.Process(clip)
+        if isinstance(step, SavePipeline):
+            clip = step.Process(clip, file)
+        else:
+            clip = step.Process(clip)
         progress.update(subTaskStepSize)
 
     return clip
