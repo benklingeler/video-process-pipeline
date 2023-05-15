@@ -3,3 +3,4 @@ inquirer
 ujson
 pytest
 moviepy
+Pillow

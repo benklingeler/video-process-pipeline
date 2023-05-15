@@ -7,9 +7,6 @@ from pipeline.basePipeline import BasePipeline
 
 
 class ZoomPipeline(BasePipeline):
-    def __init__(self, percent=10):
-        self.zoomPercent = percent
-
     def Process(self, clip: VideoClip) -> VideoClip:
         zoomPercentModifier = 1 - (self.zoomPercent / 100)
         return clip.fx(

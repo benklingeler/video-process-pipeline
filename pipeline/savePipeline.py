@@ -33,6 +33,8 @@ class SavePipeline(BasePipeline):
         )
         clip.close()
 
+        return clip
+
     def CollectRequiredInformation(self):
         lastUsedDestination = getConfiguration()["lastUsedDestination"]
         answers = iq.prompt(
@@ -46,7 +48,9 @@ class SavePipeline(BasePipeline):
                 ),
                 iq.List(
                     "keepOldFiles",
-                    message="Do you want to delete existing files in the target directory?",
+                    message=self.FormatQuestion(
+                        "Do you want to delete existing files in the target directory?"
+                    ),
                     choices=["no, keep old results", "yes, delete"],
                 ),
                 iq.Text(

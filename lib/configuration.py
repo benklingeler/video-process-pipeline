@@ -8,11 +8,13 @@ configuration = {}
 # The structure of the configuration is as follows:
 # {
 #     "lastUsedSource": <str>,
-#     "lastUsedDestination": <str>
+#     "lastUsedDestination": <str>,
+#     "lastUsedWatermarkPath": <str>
 # }
 #
 # - "lastUsedSource" represents the path of the last used source directory.
 # - "lastUsedDestination" represents the path of the last used destination directory.
+# - "lastUsedWatermarkPath" represents the path of the last used watermark image.
 #
 # The configuration variable is used to load and save configuration settings for the file conversion process.
 # It is a global variable that can be accessed and modified by various functions within the program.
@@ -100,4 +102,8 @@ def getDefaultConfiguration():
         dict: The default configuration.
     """
 
-    return {"lastUsedSource": "", "lastUsedDestination": ""}
+    return {
+        "lastUsedSource": "",
+        "lastUsedDestination": "",
+        "lastUsedWatermarkPath": "",
+    }
