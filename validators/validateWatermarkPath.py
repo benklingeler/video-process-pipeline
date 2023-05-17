@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from PIL import Image
 
 allowedWatermarkExtensions = [".png", ".jpg", ".jpeg"]
@@ -27,7 +28,7 @@ def validateWatermarkImageSize(path):
     img = Image.open(path)
     width, height = img.size
 
-    return (width >= 10 and width <= 500) and (height >= 10 and height <= 500)
+    return (width >= 10 and width <= 1000) and (height >= 10 and height <= 1000)
 
 
 # answers = iq.prompt(questions)
