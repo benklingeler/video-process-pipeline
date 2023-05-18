@@ -1,5 +1,6 @@
 import os.path as op
 from pathlib import Path
+import random
 
 import inquirer as iq
 import moviepy.editor as mp
@@ -40,104 +41,14 @@ class WatermarkPipeline(BasePipeline):
                 ]
             )
 
-            if answers["watermarkPosition"] == "Left Top":
-                logo = (
-                    mp.ImageClip(self.watermarkPath)
-                    .set_duration(clip.duration)
-                    .resize(height=clip.h * resizePercentModifier)
-                    .resize(width=clip.w * resizePercentModifier)
-                    .margin(left=8, top=8, opacity=0)
-                    .set_pos(("left", "top"))
-                )
-                clips.append(logo)
-
-            if answers["watermarkPosition"] == "Left Middle":
-                logo = (
-                    mp.ImageClip(self.watermarkPath)
-                    .set_duration(clip.duration)
-                    .resize(height=clip.h * resizePercentModifier)
-                    .resize(width=clip.w * resizePercentModifier)
-                    .margin(left=8, opacity=0)
-                    .set_pos(("left", "middle"))
-                )
-                clips.append(logo)
-
-            if answers["watermarkPosition"] == "Left Bottom":
-                logo = (
-                    mp.ImageClip(self.watermarkPath)
-                    .set_duration(clip.duration)
-                    .resize(height=clip.h * resizePercentModifier)
-                    .resize(width=clip.w * resizePercentModifier)
-                    .margin(left=8, bottom=8, opacity=0)
-                    .set_pos(("left", "bottom"))
-                )
-                clips.append(logo)
-
-            if answers["watermarkPosition"] == "Center Top":
-                logo = (
-                    mp.ImageClip(self.watermarkPath)
-                    .set_duration(clip.duration)
-                    .resize(height=clip.h * resizePercentModifier)
-                    .resize(width=clip.w * resizePercentModifier)
-                    .margin(top=8, opacity=0)
-                    .set_pos(("top"))
-                )
-                clips.append(logo)
-
-            if answers["watermarkPosition"] == "Center Middle":
-                logo = (
-                    mp.ImageClip(self.watermarkPath)
-                    .set_duration(clip.duration)
-                    .resize(height=clip.h * resizePercentModifier)
-                    .resize(width=clip.w * resizePercentModifier)
-                    .margin(opacity=0)
-                    .set_pos(("center"))
-                )
-                clips.append(logo)
-
-            if answers["watermarkPosition"] == "Center Bottom":
-                logo = (
-                    mp.ImageClip(self.watermarkPath)
-                    .set_duration(clip.duration)
-                    .resize(height=clip.h * resizePercentModifier)
-                    .resize(width=clip.w * resizePercentModifier)
-                    .margin(bottom=8, opacity=0)
-                    .set_pos(("bottom"))
-                )
-                clips.append(logo)
-
-            if answers["watermarkPosition"] == "Right Top":
-                logo = (
-                    mp.ImageClip(self.watermarkPath)
-                    .set_duration(clip.duration)
-                    .resize(height=clip.h * resizePercentModifier)
-                    .resize(width=clip.w * resizePercentModifier)
-                    .margin(right=8, top=8, opacity=0)
-                    .set_pos(("right", "top"))
-                )
-                clips.append(logo)
-
-            if answers["watermarkPosition"] == "Right Middle":
-                logo = (
-                    mp.ImageClip(self.watermarkPath)
-                    .set_duration(clip.duration)
-                    .resize(height=clip.h * resizePercentModifier)
-                    .resize(width=clip.w * resizePercentModifier)
-                    .margin(right=8, opacity=0)
-                    .set_pos(("right"))
-                )
-                clips.append(logo)
-
-            if answers["watermarkPosition"] == "Right Bottom":
-                logo = (
-                    mp.ImageClip(self.watermarkPath)
-                    .set_duration(clip.duration)
-                    .resize(height=clip.h * resizePercentModifier)
-                    .resize(width=clip.w * resizePercentModifier)
-                    .margin(right=8, bottom=8, opacity=0)
-                    .set_pos(("right", "bottom"))
-                )
-                clips.append(logo)
+            imageClip = (
+                mp.ImageClip(self.watermarkPath)
+                .set_duration(clip.duration)
+                .resize(height=clip.h * resizePercentModifier)
+                .resize(width=clip.w * resizePercentModifier)
+            )
+            logo = self.ApplyPositionOnClip(imageClip, answers["watermarkPosition"])
+            clips.append(logo)
 
         else:
             positionCounter = 0
@@ -160,18 +71,34 @@ class WatermarkPipeline(BasePipeline):
                     .resize(width=clip.w * resizePercentModifier)
                 )
 
-                if positionCounter == 0:
-                    watermark = watermark.margin(
-                        right=8, bottom=8, opacity=0
-                    ).set_position(("right", "bottom"))
-                elif positionCounter == 1:
-                    watermark = watermark.margin(left=8, top=8, opacity=0).set_position(
-                        ("left", "top")
-                    )
-                elif positionCounter == 2:
-                    watermark = watermark.margin(right=8, opacity=0).set_position(
-                        ("right", "center")
-                    )
+                possiblePositions = [
+                    "Left Top",
+                    "Left Middle",
+                    "Left Bottom",
+                    "Center Top",
+                    "Center Middle",
+                    "Center Bottom",
+                    "Right Top",
+                    "Right Middle",
+                    "Right Bottom",
+                ]
+                watermark = self.ApplyPositionOnClip(
+                    watermark,
+                    possiblePositions[random.randint(0, len(possiblePositions) - 1)],
+                )
+
+                # if positionCounter == 0:
+                #     watermark = watermark.margin(
+                #         right=8, bottom=8, opacity=0
+                #     ).set_position(("right", "bottom"))
+                # elif positionCounter == 1:
+                #     watermark = watermark.margin(left=8, top=8, opacity=0).set_position(
+                #         ("left", "top")
+                #     )
+                # elif positionCounter == 2:
+                #     watermark = watermark.margin(right=8, opacity=0).set_position(
+                #         ("right", "center")
+                #     )
 
                 clips.append(watermark.set_start(startTime))
 
@@ -219,28 +146,24 @@ class WatermarkPipeline(BasePipeline):
         self.watermarkPercentage = int(answers["percentage"])
         self.watermarkTypeIsNormal = answers["watermarkType"] == "Normal watermark"
 
-    # def SettingsPipeline(self, t):
-    #     if self.watermarkTypeIsNormal is False:
-    #         resizePercentModifier = self.watermarkPercentage / 100
-
-    #         watermark_duration = 3
-
-    #         positions = [
-    #             (self.w - t * (self.w / 3), self.h - t * (self.h / 3)),
-    #             (t * (self.w / 6), t * (self.h / 6)),
-    #             (self.w - t * (self.w / 9), self.h / 2),
-    #         ]
-
-    #         position_index = int(t // watermark_duration) % len(positions)
-    #         x, y = positions[position_index]
-
-    #         watermark = watermark(self, watermark_duration)
-    #         watermark = watermark.set_position((x, y)).set_duration(watermark_duration)
-
-    #         final_clip = self.set_opacity(0).set_duration(self.duration)
-
-    #         for t in range(int(self.duration // watermark_duration)):
-    #             watermark_clip = SettingsPipeline(t * watermark_duration)
-    #             final_clip = final_clip.overlay(watermark_clip)
-
-    #         return watermark_clip
+    def ApplyPositionOnClip(self, clip, position):
+        if position == "Left Top":
+            return clip.margin(left=8, top=8, opacity=0).set_pos(("left", "top"))
+        if position == "Left Middle":
+            return clip.margin(left=8, opacity=0).set_pos(("left"))
+        if position == "Left Bottom":
+            return clip.margin(left=8, bottom=8, opacity=0).set_pos(("left", "bottom"))
+        if position == "Center Top":
+            return clip.margin(top=8, opacity=0).set_pos(("top"))
+        if position == "Center Middle":
+            return clip.margin(opacity=0).set_pos(("center"))
+        if position == "Center Bottom":
+            return clip.margin(bottom=8, opacity=0).set_pos(("bottom"))
+        if position == "Right Top":
+            return clip.margin(right=8, top=8, opacity=0).set_pos(("right", "top"))
+        if position == "Right Middle":
+            return clip.margin(right=8, opacity=0).set_pos(("right"))
+        if position == "Right Bottom":
+            return clip.margin(right=8, bottom=8, opacity=0).set_pos(
+                ("right", "bottom")
+            )
