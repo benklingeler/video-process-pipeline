@@ -22,9 +22,7 @@ class ZoomPipeline(BasePipeline):
             [
                 iq.Text(
                     "percent",
-                    self.FormatQuestion(
-                        "How much percent you want to zoom in? (0-100)"
-                    ),
+                    self.FormatQuestion("Zoom in percent (0-100)"),
                     default="10",
                     validate=validateNumberInput(1, 99),
                 )

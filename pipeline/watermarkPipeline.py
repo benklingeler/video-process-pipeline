@@ -23,9 +23,7 @@ class WatermarkPipeline(BasePipeline):
                 [
                     iq.List(
                         "watermarkPosition",
-                        message=self.FormatQuestion(
-                            "Where do you want to place the watermark?"
-                        ),
+                        message=self.FormatQuestion("Watermark placement"),
                         choices=[
                             "Left Top",
                             "Left Middle",
