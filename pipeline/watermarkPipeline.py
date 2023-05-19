@@ -1,13 +1,14 @@
-import moviepy.editor as mp
-from moviepy.editor import VideoClip
-from pathlib import Path
-import inquirer as iq
 import os.path as op
+from pathlib import Path
+
+import inquirer as iq
+import moviepy.editor as mp
 from lib.configuration import getConfiguration, saveConfiguration
+from moviepy.editor import VideoClip
+from validators.validateNumberInput import validateNumberInput
+from validators.validateWatermarkPath import validateWatermarkPath
 
 from pipeline.basePipeline import BasePipeline
-from validators.validateWatermarkPath import validateWatermarkPath
-from validators.validateNumberInput import validateNumberInput
 
 
 class WatermarkPipeline(BasePipeline):
@@ -207,23 +208,6 @@ class WatermarkPipeline(BasePipeline):
                     ),
                     choices=["Normal watermark", "Safe watermark"],
                 ),
-                iq.List(
-                    "watermarkPosition",
-                    message=self.FormatQuestion(
-                        "Where do you want to place the watermark?"
-                    ),
-                    choices=[
-                        "Left Top",
-                        "Left Middle",
-                        "Left Bottom",
-                        "Center Top",
-                        "Center Middle",
-                        "Center Bottom",
-                        "Right Top",
-                        "Right Middle",
-                        "Right Bottom",
-                    ],
-                ),
             ]
         )
 
@@ -232,7 +216,6 @@ class WatermarkPipeline(BasePipeline):
         saveConfiguration()
         self.watermarkPercentage = int(answers["percentage"])
         self.watermarkTypeIsNormal = answers["watermarkType"] == "Normal watermark"
-        self.watermarkPosition = answers["watermarkPosition"] == "Right Bottom"
 
     # def SettingsPipeline(self, t):
     #     if self.watermarkTypeIsNormal is False:
