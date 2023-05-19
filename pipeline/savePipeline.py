@@ -41,29 +41,32 @@ class SavePipeline(BasePipeline):
             [
                 iq.Text(
                     "destPath",
-                    self.FormatQuestion("Where should we save the results?"),
+                    self.FormatQuestion("Save destination"),
                     default=(
                         lastUsedDestination if len(lastUsedDestination) > 0 else None
                     ),
                 ),
                 iq.List(
                     "keepOldFiles",
-                    message=self.FormatQuestion(
-                        "Do you want to delete existing files in the target directory?"
-                    ),
-                    choices=["no, keep old results", "yes, delete"],
+                    message=self.FormatQuestion("Delete old results?"),
+                    choices=["no", "yes, delete"],
                 ),
                 iq.Text(
                     "quality",
-                    self.FormatQuestion("Decide the video quality (1-10)"),
+                    self.FormatQuestion("Video quality (1-10)"),
                     default="5",
                     validate=validateNumberInput(1, 10),
+                ),
+                iq.List(
+                    "GIF-Converter",
+                    message=self.FormatQuestion("Convert to GIF?"),
+                    choices=["yes", "no"],
                 ),
             ]
         )
         self.destinationFolderPath = answers["destPath"]
         self.destinationFolderExists = validatePath(None, self.destinationFolderPath)
-        self.keepOldFiles = answers["keepOldFiles"] == "no, keep old results"
+        self.keepOldFiles = answers["keepOldFiles"] == "no"
         self.videoQuality = answers["quality"]
 
         getConfiguration()["lastUsedDestination"] = self.destinationFolderPath
